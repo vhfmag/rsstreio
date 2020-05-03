@@ -12,6 +12,11 @@ export async function get(req, res, next) {
     title: `Rastreamento de Objeto - ${objectTracking.code}`,
   });
 
+  objectTracking.tracks.sort(
+    (t1, t2) =>
+      new Date(t2.trackedAt).valueOf() - new Date(t1.trackedAt).valueOf()
+  );
+
   for (const track of objectTracking.tracks) {
     const title = `${track.status} ${track.observation || ""}`.trim();
     feed.item({

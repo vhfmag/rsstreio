@@ -1,16 +1,19 @@
 <script context="module">
-  import { rastro } from "rastrojs";
-  // const rastro = { track: () => ({ eita: 1 }) };
-
   export async function preload(page, session) {
     const { codigo } = page.query;
-    const [objectTracking] = await rastro.track(codigo);
+    const objectTracking = await this.fetch(`/rastrear/${codigo}.json`).then(
+      res => res.json()
+    );
+    objectTracking.tracks.sort(
+      (t1, t2) =>
+        new Date(t2.trackedAt).valueOf() - new Date(t1.trackedAt).valueOf()
+    );
     return { objectTracking };
   }
 </script>
 
 <script>
-  import Date from "../components/Date.svelte";
+  import DateComp from "../components/Date.svelte";
   import Location from "../components/Location.svelte";
 
   export let objectTracking;
@@ -58,13 +61,13 @@
 <h1>Rastreamento de Objeto - {objectTracking.code}</h1>
 
 <ul>
-  {#each objectTracking.tracks.reverse() as status}
+  {#each objectTracking.tracks as status}
     <li>
       <article>
-        <h2 id={status.trackedAt.valueOf()}>
+        <h2 id={new Date(status.trackedAt).valueOf()}>
           <Location location={status.locale} />
         </h2>
-        <Date date={status.trackedAt} />
+        <DateComp date={status.trackedAt} />
         <p>{status.status} {status.observation || ''}</p>
       </article>
     </li>

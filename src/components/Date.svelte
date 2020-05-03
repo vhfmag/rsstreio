@@ -1,11 +1,13 @@
 <script>
   export let date;
 
-  const machineReadableDate = date.toISOString().split("T")[0];
+  const actualDate = new Date(date);
+
+  const machineReadableDate = actualDate.toISOString().split("T")[0];
   const formattedDate =
     typeof Intl !== "undefined" && Intl.DateTimeFormat
-      ? new Intl.DateTimeFormat("pt-br").format(date)
-      : date.toString();
+      ? new Intl.DateTimeFormat("pt-br").format(actualDate)
+      : actualDate.toString();
 </script>
 
 <style>
