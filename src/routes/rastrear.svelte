@@ -1,14 +1,15 @@
 <script context="module">
   export async function preload(page, session) {
     const { codigo } = page.query;
-    const objectTracking = await this.fetch(`/rastrear/${codigo}.json`).then(
-      res => res.json()
-    );
+    const [statusCode, objectTracking] = await this.fetch(
+      `/rastrear/${codigo}.json`
+    ).then(res => Promise.all([res.status, res.json()]));
+
     objectTracking.tracks.sort(
       (t1, t2) =>
         new Date(t2.trackedAt).valueOf() - new Date(t1.trackedAt).valueOf()
     );
-    return { codigo, objectTracking };
+    return { codigo, objectTracking, statusCode };
   }
 </script>
 
@@ -16,8 +17,7 @@
   import DateComp from "../components/Date.svelte";
   import Location from "../components/Location.svelte";
 
-  export let codigo;
-  export let objectTracking;
+  export let codigo, statusCode, objectTracking;
 </script>
 
 <style>
@@ -53,6 +53,10 @@
   article > * {
     margin: 0;
   }
+
+  article:target {
+    box-shadow: 2.5px 2.5px 10px rgba(0, 0, 0, 0.75);
+  }
 </style>
 
 <svelte:head>
@@ -63,29 +67,33 @@
     type="application/rss+xml" />
 </svelte:head>
 
-<h1>Rastreamento de Objeto - {objectTracking.code}</h1>
+{#if statusCode === 200}
+  <h1>Rastreamento de Objeto - {objectTracking.code}</h1>
 
-<nav>
-  <a
-    rel="alternate"
-    href={`/rastrear.rss?codigo=${codigo}`}
-    type="application/rss+xml">
-    RSS
-  </a>
-</nav>
+  <nav>
+    <a
+      rel="alternate"
+      href={`/rastrear.rss?codigo=${codigo}`}
+      type="application/rss+xml">
+      RSS
+    </a>
+  </nav>
 
-<hr />
+  <hr />
 
-<ul>
-  {#each objectTracking.tracks as status}
-    <li>
-      <article>
-        <h2 id={new Date(status.trackedAt).valueOf()}>
-          <Location location={status.locale} />
-        </h2>
-        <DateComp date={status.trackedAt} />
-        <p>{status.status} {status.observation || ''}</p>
-      </article>
-    </li>
-  {/each}
-</ul>
+  <ul>
+    {#each objectTracking.tracks as status}
+      <li>
+        <article id={new Date(status.trackedAt).valueOf()}>
+          <h2>
+            <Location location={status.locale} />
+          </h2>
+          <DateComp date={status.trackedAt} />
+          <p>{status.status} {status.observation || ''}</p>
+        </article>
+      </li>
+    {/each}
+  </ul>
+{:else}
+  <h1>Código inválido ({statusCode})</h1>
+{/if}

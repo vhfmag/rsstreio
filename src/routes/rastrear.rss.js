@@ -6,6 +6,11 @@ export async function get(req, res, next) {
   const { codigo } = req.query;
   const [objectTracking] = await rastro.track(codigo);
 
+  if (!objectTracking) {
+    res.statusCode = 404;
+    res.end(JSON.stringify(""));
+  }
+
   const feed = new RSS({
     feed_url: `${getBaseUrl()}/rastrear.rss?codigo=${objectTracking.code}`,
     site_url: `${getBaseUrl()}/rastrear?codigo=${objectTracking.code}`,
