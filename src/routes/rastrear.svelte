@@ -8,7 +8,7 @@
       (t1, t2) =>
         new Date(t2.trackedAt).valueOf() - new Date(t1.trackedAt).valueOf()
     );
-    return { objectTracking };
+    return { codigo, objectTracking };
   }
 </script>
 
@@ -16,6 +16,7 @@
   import DateComp from "../components/Date.svelte";
   import Location from "../components/Location.svelte";
 
+  export let codigo;
   export let objectTracking;
 </script>
 
@@ -56,9 +57,24 @@
 
 <svelte:head>
   <title>Rastreamento de Objeto - {objectTracking.code}</title>
+  <link
+    rel="alternate"
+    href={`/rastrear.rss?codigo=${codigo}`}
+    type="application/rss+xml" />
 </svelte:head>
 
 <h1>Rastreamento de Objeto - {objectTracking.code}</h1>
+
+<nav>
+  <a
+    rel="alternate"
+    href={`/rastrear.rss?codigo=${codigo}`}
+    type="application/rss+xml">
+    RSS
+  </a>
+</nav>
+
+<hr />
 
 <ul>
   {#each objectTracking.tracks as status}
