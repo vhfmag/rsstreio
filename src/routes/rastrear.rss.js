@@ -1,14 +1,14 @@
 import RSS from "rss";
 import { rastro } from "rastrojs";
 
-import { BASE_URL } from "../consts";
+import { getBaseUrl } from "../consts";
 export async function get(req, res, next) {
   const { codigo } = req.query;
   const [objectTracking] = await rastro.track(codigo);
 
   const feed = new RSS({
-    feed_url: `${BASE_URL}/rastrear.rss?codigo=${objectTracking.code}`,
-    site_url: `${BASE_URL}/rastrear?codigo=${objectTracking.code}`,
+    feed_url: `${getBaseUrl()}/rastrear.rss?codigo=${objectTracking.code}`,
+    site_url: `${getBaseUrl()}/rastrear?codigo=${objectTracking.code}`,
     title: `Rastreamento de Objeto - ${objectTracking.code}`,
   });
 
@@ -23,7 +23,7 @@ export async function get(req, res, next) {
       date: track.trackedAt,
       title,
       description: title,
-      url: `${BASE_URL}/rastrear?codigo=${
+      url: `${getBaseUrl()}/rastrear?codigo=${
         objectTracking.code
       }#${track.trackedAt.valueOf()}`,
     });
