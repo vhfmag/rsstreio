@@ -18,12 +18,12 @@
 <script>
     import DateComp from "../components/Date.svelte";
     import Location from "../components/Location.svelte";
-    import { generateTrackingURL } from "../utils/url";
+    import { generateTitle, generateTrackingURL } from "../utils/url";
 
     export let codigo, titulo, statusCode, objectTracking;
 
     const rssHref = generateTrackingURL({ codigo, titulo, isRSS: true }).href;
-    const tituloCompleto = `Rastreamento de "${titulo}" - ${codigo}`;
+    const tituloCompleto = generateTitle({ titulo, codigo });
 </script>
 
 <svelte:head>

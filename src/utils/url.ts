@@ -1,3 +1,5 @@
+import { DEFAULT_OBJECT_TITLE } from "../consts";
+
 const PRODUCTION_URL = import.meta.env.FINAL_URL || import.meta.env.VERCEL_URL;
 
 const getBaseUrl = () =>
@@ -30,6 +32,9 @@ export function generateTrackingURL({
   return url;
 }
 
-export function getTrackingEventId(trackedAt: string) {
-  return new Date(trackedAt).toISOString();
+export function generateTitle({ titulo, codigo }: { titulo?: string, codigo: string }) {
+  titulo = titulo?.trim();
+  titulo ||= DEFAULT_OBJECT_TITLE;
+
+  return `Rastreamento de "${titulo}" - ${codigo}`;
 }

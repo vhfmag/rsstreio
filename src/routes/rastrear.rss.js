@@ -1,5 +1,5 @@
 import RSS from "rss";
-import { generateTrackingURL } from "../utils/url";
+import { generateTitle, generateTrackingURL } from "../utils/url";
 
 export async function get({ origin, host, query }) {
     const { codigo, titulo } = Object.fromEntries(query);
@@ -11,7 +11,7 @@ export async function get({ origin, host, query }) {
     const feed = new RSS({
       feed_url: generateTrackingURL({ codigo, titulo, isRSS: true }),
       site_url: generateTrackingURL({ codigo, titulo, isRSS: false }),
-      title: `Rastreamento de "${titulo}" - ${codigo}`,
+      title: generateTitle({ titulo, codigo }),
     });
 
     for (const track of rastreio) {
