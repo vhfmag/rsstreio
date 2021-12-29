@@ -1,6 +1,8 @@
-<script context="module">
-  /** @type {import('@sveltejs/kit').Load} */
-  export async function load({ page, fetch }) {
+<script context="module" lang="ts">
+  export async function load({
+    page,
+    fetch,
+  }: import("@sveltejs/kit").LoadInput) {
     const { codigo, titulo } = Object.fromEntries(page.query);
 
     const res = await fetch(`/rastrear/${codigo}.json`);
@@ -15,12 +17,17 @@
   }
 </script>
 
-<script>
+<script lang="ts">
+  import type { TrackingEntry } from "brazuka-correios";
+
   import DateComp from "../components/Date.svelte";
   import Location from "../components/Location.svelte";
   import { generateTitle, generateTrackingURL } from "../utils/url";
 
-  export let codigo, titulo, statusCode, objectTracking;
+  export let codigo: string,
+    titulo: string | undefined,
+    statusCode: number,
+    objectTracking: Array<TrackingEntry>;
 
   const rssHref = generateTrackingURL({ codigo, titulo, isRSS: true }).href;
   const tituloCompleto = generateTitle({ titulo, codigo });

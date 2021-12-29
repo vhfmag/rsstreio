@@ -1,13 +1,15 @@
+import type { Request } from "@sveltejs/kit";
 import correios from "brazuka-correios";
 
 const DATETIME_PARSER_REGEX =
   /^\s*Data.*:.*(?<dia>\d{2})\/(?<mes>\d{2})\/(?<ano>\d{4}).*Hora(?:.*):.*(?<hora>\d{2}):(?<minuto>\d{2})\s*$/;
 
 /** @param {string} datetimeDescription */
-function datetimeDescriptionToDate(datetimeDescription) {
+function datetimeDescriptionToDate(datetimeDescription: string) {
   const match = DATETIME_PARSER_REGEX.exec(datetimeDescription);
+
   if (!match || !match.groups) {
-    return null;
+    throw new Error("Invalid datetime description");
   }
 
   const { dia, mes, ano, hora, minuto } = match.groups;
@@ -16,7 +18,7 @@ function datetimeDescriptionToDate(datetimeDescription) {
   return date;
 }
 
-export async function get({ params: { code } }) {
+export async function get({ params: { code } }: Request<{ code: string }>) {
   const { rastreio, status_code: statusCode } = await correios.rastrearObjeto(
     code
   );

@@ -1,6 +1,8 @@
-<script context="module">
-  /** @type {import('@sveltejs/kit').ErrorLoad} */
-  export function load({ error, status }) {
+<script context="module" lang="ts">
+  export function load({
+    error,
+    status,
+  }: import("@sveltejs/kit").ErrorLoadInput) {
     return {
       props: {
         title: `${status}: ${error?.name}`,
@@ -11,8 +13,10 @@
   }
 </script>
 
-<script>
-  export let title, message, stack;
+<script lang="ts">
+  export let title: string,
+    message: string | undefined,
+    stack: string | undefined;
 
   const dev = process.env.NODE_ENV === "development";
 </script>
