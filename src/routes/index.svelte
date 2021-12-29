@@ -6,6 +6,10 @@
 
 <form action="/rastrear">
   <label>
+    <span class="label">O que está sendo rastreado?</span>
+    <input name="titulo" required />
+  </label>
+  <label>
     <span class="label">Código de rastreamento</span>
     <input name="codigo" required />
   </label>

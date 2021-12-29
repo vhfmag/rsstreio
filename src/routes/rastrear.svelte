@@ -38,33 +38,54 @@
   <link rel="alternate" href={rssHref} type="application/rss+xml" />
 </svelte:head>
 
-{#if statusCode === 200}
-  <h1>{tituloCompleto}</h1>
+<div class="wrapper">
+  {#if statusCode === 200}
+    <h1>{tituloCompleto}</h1>
 
-  <nav>
-    <a rel="alternate" href={rssHref} type="application/rss+xml"> RSS </a>
-  </nav>
+    {#if !titulo}
+      <form action="/rastrear">
+        <label>
+          <span class="label">O que está sendo rastreado?</span>
+          <input name="titulo" required />
+        </label>
+        <input type="hidden" name="codigo" value={codigo} required />
+        <button>Rastrear</button>
+      </form>
+    {/if}
 
-  <hr />
+    <nav>
+      <a rel="alternate" href={rssHref} type="application/rss+xml"> RSS </a>
+    </nav>
 
-  <ul>
-    {#each objectTracking ?? [] as status}
-      <li>
-        <article id={status.data}>
-          <h2>
-            <Location location={status.origem} />
-          </h2>
-          <DateComp date={status.data} />
-          <p>{status.status}</p>
-        </article>
-      </li>
-    {/each}
-  </ul>
-{:else}
-  <h1>Código inválido ({statusCode})</h1>
-{/if}
+    <hr />
+
+    <ul>
+      {#each objectTracking ?? [] as status}
+        <li>
+          <article id={status.data}>
+            <h2>
+              <Location location={status.origem} />
+            </h2>
+            <DateComp date={status.data} />
+            <p>{status.status}</p>
+          </article>
+        </li>
+      {/each}
+    </ul>
+  {:else}
+    <h1>Código inválido ({statusCode})</h1>
+  {/if}
+</div>
 
 <style>
+  h1 {
+    margin: 0;
+  }
+
+  .wrapper > * + * {
+    margin-top: 1em;
+  }
+
   ul {
     list-style-type: none;
     padding: 0;
