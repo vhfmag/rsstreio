@@ -6,7 +6,7 @@ const config = {
     kit: {
         adapter: adapter({}),
         vite: {
-            envPrefix: 'VITE_',
+            envPrefix: ['VITE_', 'VERCEL_', 'FINAL_URL'],
         }
     },
     preprocess: preprocess(),
