@@ -19,12 +19,17 @@
 <style>
   form {
     display: grid;
-    grid-auto-flow: column;
-    grid-gap: 1rem;
+    grid-auto-flow: row;
+    grid-template-columns: auto 1fr;
+    gap: 1rem 0.5rem;
   }
 
   label {
     display: contents;
+  }
+
+  button {
+    grid-column: 2;
   }
 
   .label {
