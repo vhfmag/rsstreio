@@ -1,24 +1,69 @@
 <script context="module">
   export async function preload(page, session) {
-    const { codigo } = page.query;
+    const { codigo, titulo } = page.query;
     const [statusCode, objectTracking] = await this.fetch(
       `/rastrear/${codigo}.json`
-    ).then(res => Promise.all([res.status, res.json()]));
+    ).then((res) => Promise.all([res.status, res.json()]));
 
     objectTracking.tracks.sort(
       (t1, t2) =>
         new Date(t2.trackedAt).valueOf() - new Date(t1.trackedAt).valueOf()
     );
-    return { codigo, objectTracking, statusCode };
+    return { codigo, titulo, objectTracking, statusCode };
   }
 </script>
 
-<script>
+<script lang="ts">
   import DateComp from "../components/Date.svelte";
   import Location from "../components/Location.svelte";
+  import { generateTrackingURL, getTrackingEventId } from "../utils/url";
 
-  export let codigo, statusCode, objectTracking;
+  export let codigo: string,
+    titulo: string,
+    statusCode: string | number,
+    objectTracking: {
+      tracks: {
+        trackedAt: string;
+        locale: string;
+        status: string;
+        observation?: string;
+      }[];
+      code: string;
+    };
+
+  const rssHref = generateTrackingURL({ codigo, titulo, isRSS: true }).href;
 </script>
+
+<svelte:head>
+  <title>Rastreamento de Objeto - {objectTracking.code}</title>
+  <link rel="alternate" href={rssHref} type="application/rss+xml" />
+</svelte:head>
+
+{#if statusCode === 200}
+  <h1>Rastreamento de "{titulo}" - {objectTracking.code}</h1>
+
+  <nav>
+    <a rel="alternate" href={rssHref} type="application/rss+xml"> RSS </a>
+  </nav>
+
+  <hr />
+
+  <ul>
+    {#each objectTracking.tracks as status}
+      <li>
+        <article id={getTrackingEventId(status.trackedAt)}>
+          <h2>
+            <Location location={status.locale} />
+          </h2>
+          <DateComp date={status.trackedAt} />
+          <p>{status.status} {status.observation || ""}</p>
+        </article>
+      </li>
+    {/each}
+  </ul>
+{:else}
+  <h1>Código inválido ({statusCode})</h1>
+{/if}
 
 <style>
   ul {
@@ -58,42 +103,3 @@
     box-shadow: 2.5px 2.5px 10px rgba(0, 0, 0, 0.75);
   }
 </style>
-
-<svelte:head>
-  <title>Rastreamento de Objeto - {objectTracking.code}</title>
-  <link
-    rel="alternate"
-    href={`/rastrear.rss?codigo=${codigo}`}
-    type="application/rss+xml" />
-</svelte:head>
-
-{#if statusCode === 200}
-  <h1>Rastreamento de Objeto - {objectTracking.code}</h1>
-
-  <nav>
-    <a
-      rel="alternate"
-      href={`/rastrear.rss?codigo=${codigo}`}
-      type="application/rss+xml">
-      RSS
-    </a>
-  </nav>
-
-  <hr />
-
-  <ul>
-    {#each objectTracking.tracks as status}
-      <li>
-        <article id={new Date(status.trackedAt).valueOf()}>
-          <h2>
-            <Location location={status.locale} />
-          </h2>
-          <DateComp date={status.trackedAt} />
-          <p>{status.status} {status.observation || ''}</p>
-        </article>
-      </li>
-    {/each}
-  </ul>
-{:else}
-  <h1>Código inválido ({statusCode})</h1>
-{/if}

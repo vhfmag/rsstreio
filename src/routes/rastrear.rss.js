@@ -1,9 +1,9 @@
 import RSS from "rss";
 import { rastro } from "rastrojs";
+import { generateTrackingURL, getTrackingEventId } from "../utils/url";
 
-import { getBaseUrl } from "../consts";
 export async function get(req, res, next) {
-  const { codigo } = req.query;
+  const { codigo, titulo } = req.query;
   const [objectTracking] = await rastro.track(codigo);
 
   if (!objectTracking) {
@@ -12,9 +12,9 @@ export async function get(req, res, next) {
   }
 
   const feed = new RSS({
-    feed_url: `${getBaseUrl()}/rastrear.rss?codigo=${objectTracking.code}`,
-    site_url: `${getBaseUrl()}/rastrear?codigo=${objectTracking.code}`,
-    title: `Rastreamento de Objeto - ${objectTracking.code}`,
+    feed_url: generateTrackingURL({ codigo, titulo, isRSS: true }),
+    site_url: generateTrackingURL({ codigo, titulo, isRSS: false }),
+    title: `Rastreamento de "${titulo}" - ${codigo}`,
   });
 
   objectTracking.tracks.sort(
@@ -24,13 +24,16 @@ export async function get(req, res, next) {
 
   for (const track of objectTracking.tracks) {
     const title = `${track.status} ${track.observation || ""}`.trim();
+
     feed.item({
       date: track.trackedAt,
       title,
       description: title,
-      url: `${getBaseUrl()}/rastrear?codigo=${
-        objectTracking.code
-      }#${track.trackedAt.valueOf()}`,
+      url: generateTrackingURL({
+        codigo: objectTracking.code,
+        titulo: titulo,
+        idDeEvento: getTrackingEventId(track.trackedAt),
+      }),
     });
   }
 
