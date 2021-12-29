@@ -7,3 +7,4 @@ yarn-error.log
 /.vercel_build_output/
 
 .vercel
+.env
