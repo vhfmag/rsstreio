@@ -5,3 +5,5 @@ yarn-error.log
 /cypress/screenshots/
 /.svelte-kit/
 /.vercel_build_output/
+
+.vercel
