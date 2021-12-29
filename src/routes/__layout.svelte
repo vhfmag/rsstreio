@@ -1,6 +1,9 @@
 <script>
-
 </script>
+
+<main>
+  <slot />
+</main>
 
 <style>
   :root {
@@ -27,7 +30,3 @@
     margin-bottom: 2rem;
   }
 </style>
-
-<main>
-  <slot />
-</main>

@@ -1,21 +1,21 @@
-<!doctype html>
-<html lang='en'>
-<head>
-	<meta charset='utf-8'>
-	<meta name='viewport' content='width=device-width,initial-scale=1.0'>
-	<meta name='theme-color' content='#333333'>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="theme-color" content="#333333" />
 
-	<link rel='stylesheet' href='global.css'>
-	<link rel='manifest' href='manifest.json' crossorigin='use-credentials'>
-	<link rel='icon' type='image/png' href='favicon.png'>
+    <link rel="stylesheet" href="global.css" />
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
+    <link rel="icon" type="image/png" href="favicon.png" />
 
-	<!-- This contains the contents of the <svelte:head> component, if
+    <!-- This contains the contents of the <svelte:head> component, if
 	     the current page has one -->
-	%svelte.head%
-</head>
-<body>
-	<!-- The application will be rendered inside this element,
+    %svelte.head%
+  </head>
+  <body>
+    <!-- The application will be rendered inside this element,
 	     because `src/client.js` references it -->
-	<div id='sapper'>%svelte.body%</div>
-</body>
+    <div id="sapper">%svelte.body%</div>
+  </body>
 </html>

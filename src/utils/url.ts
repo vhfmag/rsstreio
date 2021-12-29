@@ -32,7 +32,13 @@ export function generateTrackingURL({
   return url;
 }
 
-export function generateTitle({ titulo, codigo }: { titulo?: string, codigo: string }) {
+export function generateTitle({
+  titulo,
+  codigo,
+}: {
+  titulo?: string;
+  codigo: string;
+}) {
   titulo = titulo?.trim();
   titulo ||= DEFAULT_OBJECT_TITLE;
 

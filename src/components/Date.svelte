@@ -6,9 +6,14 @@
   const machineReadableDate = actualDate.toISOString();
   const formattedDate =
     typeof Intl !== "undefined" && Intl.DateTimeFormat
-      ? new Intl.DateTimeFormat(globalThis?.navigator?.language || "pt-BR", { dateStyle: "short", timeStyle: "short" }).format(actualDate)
+      ? new Intl.DateTimeFormat(globalThis?.navigator?.language || "pt-BR", {
+          dateStyle: "short",
+          timeStyle: "short",
+        }).format(actualDate)
       : actualDate.toString();
 </script>
+
+<time datetime={machineReadableDate}>{formattedDate}</time>
 
 <style>
   time {
@@ -16,5 +21,3 @@
     font-size: 0.9em;
   }
 </style>
-
-<time datetime={machineReadableDate}>{formattedDate}</time>

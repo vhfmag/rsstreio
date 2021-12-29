@@ -4,10 +4,10 @@
   const [city, state] = location
     .trim()
     .split("/")
-    .map(p => p.trim());
+    .map((p) => p.trim());
   const formattedCity = city
     .split(/\s/)
-    .map(word => word[0].toLocaleUpperCase() + word.slice(1))
+    .map((word) => word[0].toLocaleUpperCase() + word.slice(1))
     .join(" ");
   const formattedState = state.toLocaleUpperCase();
 </script>
