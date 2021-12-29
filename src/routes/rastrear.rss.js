@@ -1,43 +1,34 @@
 import RSS from "rss";
-import { rastro } from "rastrojs";
-import { generateTrackingURL, getTrackingEventId } from "../utils/url";
+import { generateTrackingURL } from "../utils/url";
 
-export async function get(req, res, next) {
-  const { codigo, titulo } = req.query;
-  const [objectTracking] = await rastro.track(codigo);
+export async function get({ origin, host, query }) {
+    const { codigo, titulo } = Object.fromEntries(query);
 
-  if (!objectTracking) {
-    res.statusCode = 404;
-    res.end(JSON.stringify(""));
-  }
+    const requestURL = `${origin ?? `http://${host}`}/rastrear/${codigo}.json`;
+    const res = await fetch(requestURL);
+    const rastreio = await res.json();
 
-  const feed = new RSS({
-    feed_url: generateTrackingURL({ codigo, titulo, isRSS: true }),
-    site_url: generateTrackingURL({ codigo, titulo, isRSS: false }),
-    title: `Rastreamento de "${titulo}" - ${codigo}`,
-  });
-
-  objectTracking.tracks.sort(
-    (t1, t2) =>
-      new Date(t2.trackedAt).valueOf() - new Date(t1.trackedAt).valueOf()
-  );
-
-  for (const track of objectTracking.tracks) {
-    const title = `${track.status} ${track.observation || ""}`.trim();
-
-    feed.item({
-      date: track.trackedAt,
-      title,
-      description: title,
-      url: generateTrackingURL({
-        codigo: objectTracking.code,
-        titulo: titulo,
-        idDeEvento: getTrackingEventId(track.trackedAt),
-      }),
+    const feed = new RSS({
+      feed_url: generateTrackingURL({ codigo, titulo, isRSS: true }),
+      site_url: generateTrackingURL({ codigo, titulo, isRSS: false }),
+      title: `Rastreamento de "${titulo}" - ${codigo}`,
     });
-  }
 
-  res.setHeader("Content-Type", "application/rss+xml");
-  res.setHeader("Content-Disposition", "inline");
-  res.end(feed.xml());
+    for (const track of rastreio) {
+        feed.item({
+            date: track.data,
+            title: track.status,
+            description: `${track.origem} ➡️ ${track.destino}<br/>${track.status}`,
+            url: generateTrackingURL({ codigo, titulo, idDeEvento: track.data }),
+        });
+    }
+
+    return {
+        headers: {
+            "Content-Type": "application/rss+xml",
+            "Content-Disposition": "inline",
+            "Cache-Control": "public, max-age=3600",
+        },
+        body: feed.xml(),
+    };
 }

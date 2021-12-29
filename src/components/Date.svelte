@@ -3,10 +3,10 @@
 
   const actualDate = new Date(date);
 
-  const machineReadableDate = actualDate.toISOString().split("T")[0];
+  const machineReadableDate = actualDate.toISOString();
   const formattedDate =
     typeof Intl !== "undefined" && Intl.DateTimeFormat
-      ? new Intl.DateTimeFormat("pt-br").format(actualDate)
+      ? new Intl.DateTimeFormat(globalThis?.navigator?.language || "pt-BR", { dateStyle: "short", timeStyle: "short" }).format(actualDate)
       : actualDate.toString();
 </script>
 

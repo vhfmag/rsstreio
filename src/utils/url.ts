@@ -1,4 +1,4 @@
-const PRODUCTION_URL = process.env.FINAL_URL || process.env.VERCEL_URL;
+const PRODUCTION_URL = import.meta.env.FINAL_URL || import.meta.env.VERCEL_URL;
 
 const getBaseUrl = () =>
   PRODUCTION_URL ? `https://${PRODUCTION_URL}` : "http://localhost:3000";
