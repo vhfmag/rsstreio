@@ -1,40 +1,35 @@
 import RSS from "rss";
-import { rastro } from "rastrojs";
 
 import { getBaseUrl } from "../consts";
-export async function get(req, res, next) {
-  const { codigo } = req.query;
-  const [objectTracking] = await rastro.track(codigo);
+export async function get({ origin, host, query, ...rest }) {
+    const { codigo } = Object.fromEntries(query);
 
-  if (!objectTracking) {
-    res.statusCode = 404;
-    res.end(JSON.stringify(""));
-  }
+    const requestURL = `${origin ?? `http://${host}`}/rastrear/${codigo}.json`;
+    console.log({ requestURL });
+    const res = await fetch(requestURL);
+    const rastreio = await res.json();
 
-  const feed = new RSS({
-    feed_url: `${getBaseUrl()}/rastrear.rss?codigo=${objectTracking.code}`,
-    site_url: `${getBaseUrl()}/rastrear?codigo=${objectTracking.code}`,
-    title: `Rastreamento de Objeto - ${objectTracking.code}`,
-  });
-
-  objectTracking.tracks.sort(
-    (t1, t2) =>
-      new Date(t2.trackedAt).valueOf() - new Date(t1.trackedAt).valueOf()
-  );
-
-  for (const track of objectTracking.tracks) {
-    const title = `${track.status} ${track.observation || ""}`.trim();
-    feed.item({
-      date: track.trackedAt,
-      title,
-      description: title,
-      url: `${getBaseUrl()}/rastrear?codigo=${
-        objectTracking.code
-      }#${track.trackedAt.valueOf()}`,
+    const feed = new RSS({
+        feed_url: `${getBaseUrl()}/rastrear.rss?codigo=${codigo}`,
+        site_url: `${getBaseUrl()}/rastrear?codigo=${codigo}`,
+        title: `Rastreamento de Objeto - ${codigo}`,
     });
-  }
 
-  res.setHeader("Content-Type", "application/rss+xml");
-  res.setHeader("Content-Disposition", "inline");
-  res.end(feed.xml());
+    for (const track of rastreio) {
+        feed.item({
+            date: track.data,
+            title: track.status,
+            description: `${track.origem} ➡️ ${track.destino}<br/>${track.status}`,
+            url: `${getBaseUrl()}/rastrear?codigo=${codigo}#${track.trackedAt}`,
+        });
+    }
+
+    return {
+        headers: {
+            "Content-Type": "application/rss+xml",
+            "Content-Disposition": "inline",
+            "Cache-Control": "public, max-age=3600",
+        },
+        body: feed.xml(),
+    };
 }
