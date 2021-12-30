@@ -4,19 +4,21 @@ import type { Request, Response } from "@sveltejs/kit";
 import type { TrackingEntry } from "brazuka-correios";
 
 export async function get({
-  origin,
   host,
   query,
-}: Request & { origin?: string }): Promise<Response> {
+}: Request): Promise<Response> {
   const { codigo, titulo } = Object.fromEntries(query);
 
-  const requestURL = `${origin ?? `http://${host}`}/rastrear/${codigo}.json`;
+  const protocol = import.meta.env.PROD ? "https" : "http";
+  const origin = `${protocol}://${host}`;
+
+  const requestURL = `${origin}/rastrear/${codigo}.json`;
   const res = await fetch(requestURL);
   const rastreio: TrackingEntry[] = await res.json();
 
   const feed = new RSS({
-    feed_url: generateTrackingURL({ codigo, titulo, isRSS: true }).href,
-    site_url: generateTrackingURL({ codigo, titulo, isRSS: false }).href,
+    feed_url: generateTrackingURL({ origin, codigo, titulo, isRSS: true }),
+    site_url: generateTrackingURL({ origin, codigo, titulo, isRSS: false }),
     title: generateTitle({ titulo, codigo }),
   });
 
@@ -25,7 +27,7 @@ export async function get({
       date: track.data,
       title: track.status,
       description: `${track.origem} ➡️ ${track.destino}<br/>${track.status}`,
-      url: generateTrackingURL({ codigo, titulo, idDeEvento: track.data }).href,
+      url: generateTrackingURL({ origin, codigo, titulo, idDeEvento: track.data }),
     });
   }
 

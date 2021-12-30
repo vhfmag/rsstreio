@@ -10,9 +10,17 @@
     const statusCode = res.status;
     const objectTracking = await res.json();
 
+    const protocol = import.meta.env.PROD ? "https" : "http";
+
     return {
       status: statusCode,
-      props: { codigo, titulo, objectTracking, statusCode },
+      props: {
+        origin: `${protocol}://${page.host}`,
+        codigo,
+        titulo,
+        objectTracking,
+        statusCode,
+      },
     };
   }
 </script>
@@ -27,9 +35,10 @@
   export let codigo: string,
     titulo: string | undefined,
     statusCode: number,
-    objectTracking: Array<TrackingEntry>;
+    objectTracking: Array<TrackingEntry>,
+    origin: string;
 
-  const rssHref = generateTrackingURL({ codigo, titulo, isRSS: true }).href;
+  const rssHref = generateTrackingURL({ origin, codigo, titulo, isRSS: true });
   const tituloCompleto = generateTitle({ titulo, codigo });
 </script>
 

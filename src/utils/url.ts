@@ -6,27 +6,26 @@ const getBaseUrl = () =>
   PRODUCTION_URL ? `https://${PRODUCTION_URL}` : "http://localhost:3000";
 
 export function generateTrackingURL({
+  origin,
   isRSS,
   codigo,
   titulo,
   idDeEvento,
 }: {
+  origin: string;
   codigo: string;
   titulo?: string;
   idDeEvento?: string;
   isRSS?: boolean;
 }) {
-  const url = new URL(getBaseUrl());
-
-  url.pathname = isRSS ? `/rastrear.rss` : `/rastrear`;
-  url.searchParams.set("codigo", codigo);
+  let url = `${origin}/rastrear${isRSS ? ".rss" : ""}?codigo=${encodeURIComponent(codigo)}`;
 
   if (titulo) {
-    url.searchParams.set("titulo", titulo);
+    url += `titulo=${encodeURIComponent(titulo)}`;
   }
 
   if (idDeEvento) {
-    url.hash = idDeEvento;
+    url += `#${encodeURIComponent(idDeEvento)}`;
   }
 
   return url;
