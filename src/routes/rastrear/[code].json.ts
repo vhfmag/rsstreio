@@ -1,5 +1,6 @@
 import type { Request } from "@sveltejs/kit";
 import correios from "brazuka-correios";
+import { cleanUpString } from "../../utils/parse";
 
 const DATETIME_PARSER_REGEX =
   /^\s*Data.*:.*(?<dia>\d{2})\/(?<mes>\d{2})\/(?<ano>\d{4}).*Hora(?:.*):.*(?<hora>\d{2}):(?<minuto>\d{2})\s*$/;
@@ -35,11 +36,15 @@ export async function get({ params: { code } }: Request<{ code: string }>) {
       "Content-Type": "application/json",
       "Cache-Control": "public, max-age=10800",
     },
-    body: rastreio.map(({ status, data, origem, destino }) => ({
-      status: status.slice(8),
+    body: rastreio.map(({ status, data, ...rest }) => ({
+      status: cleanUpString(status),
       data: datetimeDescriptionToDate(data)?.toISOString(),
-      origem: origem.slice(8),
-      destino: destino.slice(9),
+      ..."local" in rest ? {
+        local: cleanUpString(rest.local),
+      } : {
+        origem: cleanUpString(rest.origem),
+        destino: cleanUpString(rest.destino)
+      },
     })),
   };
 }

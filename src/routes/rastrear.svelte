@@ -32,11 +32,11 @@
   import Location from "../components/Location.svelte";
   import { generateTitle, generateTrackingURL } from "../utils/url";
 
-  export let codigo: string,
-    titulo: string | undefined,
-    statusCode: number,
-    objectTracking: Array<TrackingEntry>,
-    origin: string;
+  export let codigo: string;
+  export let origin: string;
+  export let statusCode: number;
+  export let titulo: string | undefined;
+  export let objectTracking: Array<TrackingEntry>;
 
   const rssHref = generateTrackingURL({ origin, codigo, titulo, isRSS: true });
   const tituloCompleto = generateTitle({ titulo, codigo });
@@ -73,7 +73,9 @@
         <li>
           <article id={status.data}>
             <h2>
-              <Location location={status.origem} />
+              <Location
+                location={"local" in status ? status.local : status.origem}
+              />
             </h2>
             <DateComp date={status.data} />
             <p>{status.status}</p>

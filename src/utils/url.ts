@@ -1,9 +1,6 @@
 import { DEFAULT_OBJECT_TITLE } from "../consts";
 
-const PRODUCTION_URL = import.meta.env.VITE_FINAL_URL || import.meta.env.VITE_VERCEL_URL;
-
-const getBaseUrl = () =>
-  PRODUCTION_URL ? `https://${PRODUCTION_URL}` : "http://localhost:3000";
+const PRODUCTION_URL = import.meta.env.VERCEL_URL;
 
 export function generateTrackingURL({
   origin,

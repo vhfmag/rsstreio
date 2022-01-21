@@ -1,15 +1,25 @@
 declare module "brazuka-correios" {
-  export interface TrackingEntry {
+  interface BaseTrackingEntry {
     data: string;
-    origem: string;
-    destino: string;
     status: string;
   }
+
+  export interface NewTrackingEntry extends BaseTrackingEntry {
+    local: string;
+  }
+
+  export interface OldTrackingEntry extends BaseTrackingEntry {
+    origem: string;
+    destino: string;
+  }
+
+  export type TrackingEntry = NewTrackingEntry | OldTrackingEntry;
 
   const correios: {
     rastrearObjeto(
       code: string
     ): Promise<{ status_code: number; rastreio: TrackingEntry[] }>;
   };
+
   export default correios;
 }

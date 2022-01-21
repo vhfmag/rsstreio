@@ -2,6 +2,7 @@ import RSS from "rss";
 import { generateTitle, generateTrackingURL } from "../utils/url";
 import type { Request, Response } from "@sveltejs/kit";
 import type { TrackingEntry } from "brazuka-correios";
+import { cleanUpString } from "../utils/parse";
 
 export async function get({
   host,
@@ -26,7 +27,7 @@ export async function get({
     feed.item({
       date: track.data,
       title: track.status,
-      description: `${track.origem} ➡️ ${track.destino}<br/>${track.status}`,
+      description: "local" in track ? `${cleanUpString(track.local)}<br/>${cleanUpString(track.status)}` : `${cleanUpString(track.origem)} ➡️ ${cleanUpString(track.destino)}<br/>${cleanUpString(track.status)}`,
       url: generateTrackingURL({ origin, codigo, titulo, idDeEvento: track.data }),
     });
   }
