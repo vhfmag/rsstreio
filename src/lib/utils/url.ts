@@ -1,6 +1,4 @@
-import { DEFAULT_OBJECT_TITLE } from "../consts";
-
-const PRODUCTION_URL = import.meta.env.VERCEL_URL;
+import { DEFAULT_OBJECT_TITLE } from "./consts";
 
 export function generateTrackingURL({
   origin,
@@ -28,13 +26,7 @@ export function generateTrackingURL({
   return url;
 }
 
-export function generateTitle({
-  titulo,
-  codigo,
-}: {
-  titulo?: string;
-  codigo: string;
-}) {
+export function generateTitle({ titulo, codigo }: { titulo?: string; codigo: string }) {
   titulo = titulo?.trim();
   titulo ||= DEFAULT_OBJECT_TITLE;
 

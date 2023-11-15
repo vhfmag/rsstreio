@@ -16,9 +16,7 @@ declare module "brazuka-correios" {
   export type TrackingEntry = NewTrackingEntry | OldTrackingEntry;
 
   const correios: {
-    rastrearObjeto(
-      code: string
-    ): Promise<{ status_code: number; rastreio: TrackingEntry[] }>;
+    rastrearObjeto(code: string): Promise<{ status_code: number; rastreio: TrackingEntry[] }>;
   };
 
   export default correios;

@@ -1,24 +1,9 @@
-<script context="module" lang="ts">
-  export function load({
-    error,
-    status,
-  }: import("@sveltejs/kit").ErrorLoadInput) {
-    return {
-      props: {
-        title: `${status}: ${error?.name}`,
-        message: error?.message,
-        stack: error?.stack,
-      },
-    };
-  }
-</script>
-
 <script lang="ts">
-  export let title: string,
-    message: string | undefined,
-    stack: string | undefined;
+  import { page } from "$app/stores";
 
   const dev = import.meta.env.DEV;
+  const title = `got ${$page.status} for ${$page.url.pathname}`;
+  const stack = $page.error && "stack" in $page.error && $page.error.stack;
 </script>
 
 <svelte:head>
@@ -27,7 +12,7 @@
 
 <h1>{title}</h1>
 
-<p>{message}</p>
+<p>{$page.error?.message}</p>
 
 {#if dev && stack}
   <pre>{stack}</pre>

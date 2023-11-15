@@ -1,42 +1,13 @@
-<script context="module" lang="ts">
-  export async function load({
-    page,
-    fetch,
-  }: import("@sveltejs/kit").LoadInput) {
-    const { codigo, titulo } = Object.fromEntries(page.query);
-
-    const res = await fetch(`/rastrear/${codigo}.json`);
-
-    const statusCode = res.status;
-    const objectTracking = await res.json();
-
-    const protocol = import.meta.env.PROD ? "https" : "http";
-
-    return {
-      status: statusCode,
-      props: {
-        origin: `${protocol}://${page.host}`,
-        codigo,
-        titulo,
-        objectTracking,
-        statusCode,
-      },
-    };
-  }
-</script>
-
 <script lang="ts">
-  import type { TrackingEntry } from "brazuka-correios";
+  import type { PageData } from "./$types";
 
-  import DateComp from "../components/Date.svelte";
-  import Location from "../components/Location.svelte";
-  import { generateTitle, generateTrackingURL } from "../utils/url";
+  import DateComp from "./Date.svelte";
+  import Location from "./Location.svelte";
+  import { generateTitle, generateTrackingURL } from "$lib/utils/url";
 
-  export let codigo: string;
-  export let origin: string;
-  export let statusCode: number;
-  export let titulo: string | undefined;
-  export let objectTracking: Array<TrackingEntry>;
+  export let data: PageData;
+
+  const { codigo, origin, statusCode, titulo, objectTracking } = data;
 
   const rssHref = generateTrackingURL({ origin, codigo, titulo, isRSS: true });
   const tituloCompleto = generateTitle({ titulo, codigo });
@@ -73,9 +44,7 @@
         <li>
           <article id={status.data}>
             <h2>
-              <Location
-                location={"local" in status ? status.local : status.origem}
-              />
+              <Location location={"local" in status ? status.local : status.origem} />
             </h2>
             <DateComp date={status.data} />
             <p>{status.status}</p>

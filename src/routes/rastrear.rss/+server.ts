@@ -1,17 +1,13 @@
 import RSS from "rss";
-import { generateTitle, generateTrackingURL } from "../utils/url";
-import type { Request, Response } from "@sveltejs/kit";
+import { generateTitle, generateTrackingURL } from "$lib/utils/url";
 import type { TrackingEntry } from "brazuka-correios";
-import { cleanUpString } from "../utils/parse";
+import { cleanUpString } from "$lib/utils/parse";
 
-export async function get({
-  host,
-  query,
-}: Request): Promise<Response> {
-  const { codigo, titulo } = Object.fromEntries(query);
+export async function GET({ url }) {
+  const { codigo, titulo } = Object.fromEntries(url.searchParams);
 
   const protocol = import.meta.env.PROD ? "https" : "http";
-  const origin = `${protocol}://${host}`;
+  const origin = `${protocol}://${url.host}`;
 
   const requestURL = `${origin}/rastrear/${codigo}.json`;
   const res = await fetch(requestURL);
@@ -27,18 +23,22 @@ export async function get({
     feed.item({
       date: track.data,
       title: track.status,
-      description: "local" in track ? `${cleanUpString(track.local)}<br/>${cleanUpString(track.status)}` : `${cleanUpString(track.origem)} ➡️ ${cleanUpString(track.destino)}<br/>${cleanUpString(track.status)}`,
+      description:
+        "local" in track
+          ? `${cleanUpString(track.local)}<br/>${cleanUpString(track.status)}`
+          : `${cleanUpString(track.origem)} ➡️ ${cleanUpString(track.destino)}<br/>${cleanUpString(
+              track.status,
+            )}`,
       url: generateTrackingURL({ origin, codigo, titulo, idDeEvento: track.data }),
     });
   }
 
-  return {
+  return new Response(feed.xml(), {
     status: 200,
-    headers: {
+    headers: new Headers({
       "Content-Type": "application/rss+xml",
       "Content-Disposition": "inline",
       "Cache-Control": "public, max-age=3600",
-    },
-    body: feed.xml(),
-  };
+    }),
+  });
 }
